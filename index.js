@@ -47,8 +47,7 @@ inquirer
   });
 
   const addNewFile = () =>{
-    //console.log("newfile");
-    inquirer
+        inquirer
         .prompt([
             {
             name: 'filename',
@@ -64,8 +63,7 @@ inquirer
             },
         ])
         .then((answers) => {
-            //console.info('Answers:', answers);
-            fs.writeFile(`./files/${answers.filename}.json`, `${answers.content}`, (err)=>{
+                        fs.writeFile(`./files/${answers.filename}.json`, `${answers.content}`, (err)=>{
                 if (err) 
                     console.log(err);
                 else
@@ -91,7 +89,6 @@ inquirer
                 }
             ])
             .then((answers)=>{
-                //console.log(answers.chooseFile)
                 insertContent();
             })
     })
