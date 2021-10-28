@@ -1,14 +1,15 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 
-const firstQuestion=[{
+// Define some variable.
+const firstQuestion = [{
     type: 'list',
     name: 'reptile',
-    message: 'What do you want to do?',
+    message: 'What would you do?',
     choices: ['Insert', 'Update', 'Delete', 'Show all files'],
 }]
 
-const chooseInsert=[{
+const chooseInsert = [{
     type: 'list',
     name: 'typeInsert',
     message: 'What type insert you want?',
@@ -23,47 +24,46 @@ inquirer
             inquirer
                 .prompt(chooseInsert)
                 .then((answers) => {
-                    //console.log(answers);
                     switch (answers.typeInsert){
                         case "Insert new file":
                             addNewFile();
                             break;
                         case "Insert content to a file":
-                            chooseFile();
+                            chooseForInsert();
                             break;
                     }
                 })
             break;
         case "Update":
-            //TODO: do some update function here
+            // TODO: do some update function here
             break;
         case "Delete":
-            //TODO: delete function here
+            chooseForDelete();
             break;
         case "Show all files":
-            //confuse :)
+            // TODO: Something for list all file
             break;
     }
   });
 
-  const addNewFile = () =>{
-        inquirer
+  const addNewFile = () => {
+    inquirer
         .prompt([
             {
-            name: 'filename',
-            message: 'What is filename?',
-            validate: function validatename(name){
+                name: 'filename',
+                message: 'Please insert title of file:',
+                validate: function validatename(name){
                     return name !== '';
                 }
             },
             {
-            name: 'content',
-            message: 'What is contents?',
-            default: '',
+                name: 'content',
+                message: 'Write your content:',
+                default: '',
             },
         ])
         .then((answers) => {
-                        fs.writeFile(`./files/${answers.filename}.json`, `${answers.content}`, (err)=>{
+            fs.writeFile(`./files/${answers.filename}.json`, `${answers.content}`, (err) => {
                 if (err) 
                     console.log(err);
                 else
@@ -72,8 +72,44 @@ inquirer
         });
   }
 
-  const chooseFile = () =>{
-    var listFile =[]
+  const chooseForInsert = () => {
+    var listFile = [];
+    fs.readdir("./files", (err, files) => {
+        files.forEach(file => {
+            listFile.push(file);
+        })
+        
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'chooseFile',
+                    message: 'What file you want to insert?',
+                    choices: listFile,
+                },
+                {
+                    name: 'content',
+                    message: 'Write your content:',
+                    default: '',
+                }
+            ])
+            .then((answers) => {
+                insertContent(answers.filename, answers.content);
+            })
+    })
+  }
+
+  const insertContent = (filename, content) => {
+    fs.writeFile(`./files/${filename}.json`, `${content}`, (err) => {
+        if (err) 
+            console.log(err);
+        else
+            console.log("Insert file successfully!");
+    });
+  }
+
+  const chooseForDelete = () => {
+    var listFile = [];
     fs.readdir("./files", (err, files) => {
         files.forEach(file => {
             listFile.push(file);
@@ -88,12 +124,12 @@ inquirer
                     choices: listFile,
                 }
             ])
-            .then((answers)=>{
-                insertContent();
+            .then((answers) => {
+                deleteFile(answers.filename);
             })
     })
   }
 
-  const insertContent = () =>{
-
+  const deleteFile = (filename) => {
+    fs.unlinkSync(`./files/${filename}.json`);
   }
